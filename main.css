@@ -1,0 +1,26 @@
+* {
+margin: auto;
+}
+
+button{
+    padding: 20px;
+    margin: 5px;
+}
+
+#chessBoard{
+    margin: auto;
+    width: 400px;
+    padding: 10px;
+}
+
+.buttonDiv{
+    text-align: center;
+}
+
+#promotionDiv{
+    visibility: hidden;
+}
+
+.promotionButtons{
+    padding: 0px;
+}

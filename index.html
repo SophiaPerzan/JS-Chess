@@ -3,6 +3,9 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta http-equiv='cache-control' content='no-cache'> 
+    <meta http-equiv='expires' content='0'> 
+    <meta http-equiv='pragma' content='no-cache'>
     <title>Page Title</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
@@ -14,14 +17,24 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
       integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
       crossorigin="anonymous"></script>
-
+      <script defer type="module" src='scripts.js'></script>
 </head>
 <body>
 
-    <div id="chessBoard" style="width: 400px;"></div>
-    <button id="startBtn">Start Position</button>
-    <button id="clearBtn">Clear Board</button>
+    <div class="buttonDiv" id="promotionDiv">
+        <button class="promotionButtons" id="queenButton"><img src="./img/chesspieces/wikipedia/bQ.png" alt=""></button>
+        <button class="promotionButtons" id="rookButton"><img src="./img/chesspieces/wikipedia/bR.png" alt=""></button>
+        <button class="promotionButtons" id="bishopButton"><img src="./img/chesspieces/wikipedia/bB.png" alt=""></button>
+        <button class="promotionButtons" id="knightButton"><img src="./img/chesspieces/wikipedia/bN.png" alt=""></button>
+    </div>
+    <div id="chessBoard"></div>
+    <div class="buttonDiv">    
+        <button id="startBtn">Start Position</button>
+        <button id="clearBtn">Clear Board</button>
+        <button id="randomMoveButton">Make Random Move</button>
+    </div>
 
-    <script src='scripts.js'></script>
+
+    
 </body>
 </html>
