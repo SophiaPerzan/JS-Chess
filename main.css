@@ -13,7 +13,14 @@ button{
     padding: 10px;
 }
 
-#buttonDiv{
-    width: 50%;
+.buttonDiv{
     text-align: center;
+}
+
+#promotionDiv{
+    visibility: hidden;
+}
+
+.promotionButtons{
+    padding: 0px;
 }
