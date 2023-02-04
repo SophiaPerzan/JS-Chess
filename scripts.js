@@ -12,8 +12,28 @@ var board = Chessboard('chessBoard', {
     onDrop: onDrop,
     onSnapEnd: onSnapEnd*/
   });
-  $('#startBtn').on('click', board.start)
-  $('#clearBtn').on('click', board.clear)
+  $('#startBtn').on('click', onStartButtonClick)
+  $('#clearBtn').on('click', onClearButtonClick)
+  $('#randomMoveButton').on('click',onRandomButtonClick)
+
+  function onStartButtonClick(){
+    try {
+        chess.load('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w')
+      } catch (e) {
+        console.log(e)
+      }
+    board.start()
+    
+  }
+
+  function onClearButtonClick(){
+    chess.clear();
+    board.clear();
+  }
+
+  function onRandomButtonClick(){
+    makeRandomMove();
+  }
 
   function makeRandomMove(){
   if (!chess.isGameOver()) {
@@ -22,9 +42,4 @@ var board = Chessboard('chessBoard', {
     chess.move(move)
     board.position(chess.fen())
     }
-    if (!chess.isGameOver()) {
-        setTimeout(()=> {makeRandomMove()}, 400  );
-    }
 }
-
-makeRandomMove();
