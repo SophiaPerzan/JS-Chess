@@ -12,7 +12,9 @@ var board = Chessboard('chessBoard', {
     showErrors: 'console',
     onDragStart: onDragStart,
     onDrop: onDrop,
-    onSnapEnd: onSnapEnd
+    onSnapEnd: onSnapEnd,
+    onMouseoutSquare: onMouseoutSquare,
+    onMouseoverSquare: onMouseoverSquare
   });
   $('#startBtn').on('click', onStartButtonClick)
   $('#clearBtn').on('click', onClearButtonClick)
@@ -22,6 +24,8 @@ var board = Chessboard('chessBoard', {
   $('#bishopButton').on('click', onBishopButtonClick)
   $('#knightButton').on('click', onKnightButtonClick)
 
+  let whiteSquareGrey = '#a9a9a9'
+  let blackSquareGrey = '#696969'
   let desiredPromotion = '';
   let disableInteraction = false;
   let sourcePawn = '';
@@ -83,6 +87,39 @@ var board = Chessboard('chessBoard', {
     makeRandomMove();
   }
 
+  function removeGreySquares () {
+    $('#chessBoard .square-55d63').css('background', '')
+  }
+
+  function makeSquareGrey (square) {
+    let $square = $('#chessBoard .square-' + square)
+  
+    let backgroundColour = whiteSquareGrey
+    if ($square.hasClass('black-3c85d')) {
+      backgroundColour = blackSquareGrey
+    }
+  
+    $square.css('background', backgroundColour)
+  }
+
+  function onMouseoverSquare (square, piece) {
+    let possibleMoves = chess.moves({
+      square: square,
+      verbose: true
+    })
+  
+    // exit if there are no moves available for this square
+    if (possibleMoves.length === 0) return
+  
+    // highlight the square they moused over
+    makeSquareGrey(square);
+  
+    // highlight the possible squares for this piece
+    for (var i = 0; i < possibleMoves.length; i++) {
+      makeSquareGrey(possibleMoves[i].to);
+    }
+  }
+
   function showPromotionButtons(){
     $('#promotionDiv').css('visibility','visible');
   }
@@ -116,6 +153,7 @@ var board = Chessboard('chessBoard', {
   }
 
   function onDrop(sourceOfPiece, targetSquare, piece, positionAfterDrop, positionBeforeDrop, boardOrientation){
+    removeGreySquares();
     let regex8thRank = /8/;
     let regex1stRank = /1/;
     if( chess.get(sourceOfPiece).type === 'p' && 
@@ -133,6 +171,10 @@ var board = Chessboard('chessBoard', {
         return 'snapback'
     }
     return
+  }
+
+  function onMouseoutSquare (square, piece) {
+    removeGreySquares();
   }
 
   function onSnapEnd(){
