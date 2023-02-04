@@ -5,6 +5,7 @@ margin: auto;
 #chessBoard{
     margin: auto;
     width: 400px;
+    padding: 10px;
 }
 
 #buttonDiv{
