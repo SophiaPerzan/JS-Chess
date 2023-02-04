@@ -2,6 +2,11 @@
 margin: auto;
 }
 
+button{
+    padding: 20px;
+    margin: 5px;
+}
+
 #chessBoard{
     margin: auto;
     width: 400px;
