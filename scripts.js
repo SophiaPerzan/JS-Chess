@@ -121,6 +121,18 @@ var board = Chessboard('chessBoard', {
   }
 
   function showPromotionButtons(){
+    if(chess.turn() === 'w'){
+      $('#queenImage').attr('src','./img/chesspieces/wikipedia/wQ.png')
+      $('#rookImage').attr('src','./img/chesspieces/wikipedia/wR.png')
+      $('#bishopImage').attr('src','./img/chesspieces/wikipedia/wB.png')
+      $('#knightImage').attr('src','./img/chesspieces/wikipedia/wN.png')
+    }else{
+      $('#queenImage').attr('src','./img/chesspieces/wikipedia/bQ.png')
+      $('#rookImage').attr('src','./img/chesspieces/wikipedia/bR.png')
+      $('#bishopImage').attr('src','./img/chesspieces/wikipedia/bB.png')
+      $('#knightImage').attr('src','./img/chesspieces/wikipedia/bN.png')
+    }
+
     $('#promotionDiv').css('visibility','visible');
   }
 
