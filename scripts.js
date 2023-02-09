@@ -16,6 +16,17 @@ var board = Chessboard('chessBoard', {
     onMouseoutSquare: onMouseoutSquare,
     onMouseoverSquare: onMouseoverSquare
   });
+  let $board = $('#chessBoard')
+  let whiteSquareGrey = '#a9a9a9'
+  let blackSquareGrey = '#696969'
+  let desiredPromotion = '';
+  let disableInteraction = false;
+  let sourcePawn = '';
+  let targetSquareForPawn = '';
+  let squareClass = 'square-55d63'
+  let squareToHighlight = null
+  let colorToHighlight = null
+    
   $('#startBtn').on('click', onStartButtonClick)
   $('#clearBtn').on('click', onClearButtonClick)
   $('#randomMoveButton').on('click',onRandomButtonClick)
@@ -24,12 +35,10 @@ var board = Chessboard('chessBoard', {
   $('#bishopButton').on('click', onBishopButtonClick)
   $('#knightButton').on('click', onKnightButtonClick)
 
-  let whiteSquareGrey = '#a9a9a9'
-  let blackSquareGrey = '#696969'
-  let desiredPromotion = '';
-  let disableInteraction = false;
-  let sourcePawn = '';
-  let targetSquareForPawn = '';
+  function removeHighlights (color) {
+    $board.find('.' + squareClass)
+      .removeClass('highlight-' + color)
+  }
 
   function onQueenButtonClick(){
     hidePromotionButtons();
@@ -158,6 +167,21 @@ var board = Chessboard('chessBoard', {
     } catch (error) {
         //window.alert("Invalid move")
     }
+    if(chess.turn() === 'b'){
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + sourcePawn).addClass('highlight-white')
+      squareToHighlight = targetSquareForPawn
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-white')
+    }else{
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + sourcePawn).addClass('highlight-black')
+      squareToHighlight = targetSquareForPawn
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-black')
+    }
     sourcePawn = '';
     targetSquareForPawn = '';
     desiredPromotion = '';
@@ -182,6 +206,21 @@ var board = Chessboard('chessBoard', {
     } catch (error) {
         return 'snapback'
     }
+    if(chess.turn() === 'b'){
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + sourceOfPiece).addClass('highlight-white')
+      squareToHighlight = targetSquare
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-white')
+    }else{
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + sourceOfPiece).addClass('highlight-black')
+      squareToHighlight = targetSquare
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-black')
+    }
     return
   }
 
@@ -198,8 +237,23 @@ var board = Chessboard('chessBoard', {
 
   function makeRandomMove(){
   if (!chess.isGameOver()) {
-    const moves = chess.moves()
+    const moves = chess.moves({verbose: true})
     const move = moves[Math.floor(Math.random() * moves.length)]
+    if(chess.turn() === 'w'){
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + move.from).addClass('highlight-white')
+      squareToHighlight = move.to
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-white')
+    }else{
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + move.from).addClass('highlight-black')
+      squareToHighlight = move.to
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-black')
+    }
     chess.move(move)
     board.position(chess.fen())
     }
