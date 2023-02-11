@@ -77,6 +77,8 @@ var board = Chessboard('chessBoard', {
       } catch (e) {
         console.log(e)
       }
+    removeHighlights('white')
+    removeHighlights('black')
     board.start()
     
   }
@@ -85,6 +87,8 @@ var board = Chessboard('chessBoard', {
     if(disableInteraction){
         return
     }
+    removeHighlights('white')
+    removeHighlights('black')
     chess.clear();
     board.clear();
   }
