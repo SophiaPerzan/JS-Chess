@@ -198,7 +198,7 @@ export function getBestMove(depth){
         let max = -100000000
         for (let i=0;i<moveScores.length;i++){
             if(moveScores[i].score>max){
-                max = moveScores[i]
+                max = moveScores[i].score
                 bestMoveIndex = i
             }
         }
@@ -206,7 +206,7 @@ export function getBestMove(depth){
         let min = 100000000
         for (let i=0;i<moveScores.length;i++){
             if(moveScores[i].score<min){
-                min = moveScores[i]
+                min = moveScores[i].score
                 bestMoveIndex = i
             }
         }

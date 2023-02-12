@@ -261,7 +261,7 @@ var board = Chessboard('chessBoard', {
       $board.find('.square-' + squareToHighlight)
     .addClass('highlight-black')
     }
-    console.log("Turn to move: "+chess.turn()+", Best Engine Move: "+bestMove.move+", Engine Evaluation: "+bestMove.score/100.0+" Principle Variation: "+bestMove.pV.reverse().toString())
+    console.log("Turn to move: "+chess.turn()+", Best Engine Move: "+bestMove.move.san+", Engine Evaluation: "+bestMove.score/100.0+" Principle Variation: "+bestMove.pV.reverse().toString())
     chess.move(bestMove.move)
     
     board.position(chess.fen())
