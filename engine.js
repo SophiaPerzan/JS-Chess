@@ -109,6 +109,7 @@ const blackKingPieceSquareTable = [20, 30, 10,  0,  0, 10, 30, 20,
                                     -30,-40,-40,-50,-50,-40,-40,-30]
 
 
+//let principleVariation = []
 
 export function generateMovesToDepth(depth){
     if(depth<1){
@@ -124,62 +125,70 @@ export function generateMovesToDepth(depth){
     return numberofNodes
   }
 
-function maximizing(depth, alpha, beta){
+function maximizing(depth, alpha, beta, moveMade){
     if(depth === 0){
-        return evaltuatePosition()
+        return {score: evaltuatePosition(), pV: []}
     }else{
         const moves = chess.moves()
+        let principleVariation = [moves[0]]
         for (let i=0;i<moves.length;i++){
             chess.move(moves[i])
-            let score = minimizing(depth-1, alpha, beta)
+            let result = minimizing(depth-1, alpha, beta, moves[i])
+            let score = result.score
             if(score>=beta){
                 chess.undo()
-                return beta
+                return {score: beta, pV: principleVariation}
             }
             if(score>alpha){
                 alpha = score
+                result.pV.push(moves[i])
+                principleVariation = result.pV
             }
             chess.undo()
           }
-          return alpha
+          return {score: alpha, pV: principleVariation}
     }
 }
 
-function minimizing(depth, alpha, beta){
+function minimizing(depth, alpha, beta, moveMade){
     if(depth === 0){
-        return evaltuatePosition()
+        return {score: evaltuatePosition(), pV: []}
     }else{
         const moves = chess.moves()
+        let principleVariation = [moves[0]]
         for (let i=0;i<moves.length;i++){
             chess.move(moves[i])
-            let score = maximizing(depth-1, alpha, beta)
+            let result = maximizing(depth-1, alpha, beta, moves[i])
+            let score = result.score
             if(score<=alpha){
                 chess.undo()
-                return alpha
+                return {score: alpha, pV: principleVariation}
             }
             if(score<beta){
                 beta = score
+                result.pV.push(moves[i])
+                principleVariation = result.pV
             }
             chess.undo()
           }
-        return beta
+        return {score: beta, pV: principleVariation}
     }
 }
 
 function iterativeDeepening(depth){
 
-    
+
 }
 
 export function getBestMove(depth){
-    const moves = chess.moves()
+    const moves = chess.moves({verbose: true})
     let moveScores = []
     for (let i=0;i<moves.length;i++){
         chess.move(moves[i])
         if(chess.turn() === 'w'){
-            moveScores.push(maximizing(depth-1, -1000000000, 1000000000))
+            moveScores.push(maximizing(depth-1, -1000000000, 1000000000, moves[i]))
         }else{
-            moveScores.push(minimizing(depth-1, -1000000000, 1000000000))
+            moveScores.push(minimizing(depth-1, -1000000000, 1000000000, moves[i]))
         }
         chess.undo()
       }
@@ -188,7 +197,7 @@ export function getBestMove(depth){
     if(chess.turn() === 'w'){
         let max = -100000000
         for (let i=0;i<moveScores.length;i++){
-            if(moveScores[i]>max){
+            if(moveScores[i].score>max){
                 max = moveScores[i]
                 bestMoveIndex = i
             }
@@ -196,13 +205,13 @@ export function getBestMove(depth){
     }else{
         let min = 100000000
         for (let i=0;i<moveScores.length;i++){
-            if(moveScores[i]<min){
+            if(moveScores[i].score<min){
                 min = moveScores[i]
                 bestMoveIndex = i
             }
         }
     }
-    return {move: moves[bestMoveIndex], score: moveScores[bestMoveIndex]}
+    return {move: moves[bestMoveIndex], score: moveScores[bestMoveIndex].score, pV: moveScores[bestMoveIndex].pV}
 }
 
 export function evaltuatePosition(){
