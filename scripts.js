@@ -1,7 +1,8 @@
 
 import { Chess } from 'https://unpkg.com/chess.js@1.0.0-beta.3/dist/chess.js';
+import { evaltuatePosition, getBestMove } from './engine.js';
 
-const chess = new Chess();
+export const chess = new Chess();
 
 var board = Chessboard('chessBoard', {
     //Do onChange to reset eval
@@ -29,7 +30,7 @@ var board = Chessboard('chessBoard', {
     
   $('#startBtn').on('click', onStartButtonClick)
   $('#clearBtn').on('click', onClearButtonClick)
-  $('#randomMoveButton').on('click',onRandomButtonClick)
+  $('#aiMoveButton').on('click',onAIButtonClick)
   $('#queenButton').on('click', onQueenButtonClick)
   $('#rookButton').on('click', onRookButtonClick)
   $('#bishopButton').on('click', onBishopButtonClick)
@@ -77,6 +78,8 @@ var board = Chessboard('chessBoard', {
       } catch (e) {
         console.log(e)
       }
+    removeHighlights('white')
+    removeHighlights('black')
     board.start()
     
   }
@@ -85,15 +88,19 @@ var board = Chessboard('chessBoard', {
     if(disableInteraction){
         return
     }
+    removeHighlights('white')
+    removeHighlights('black')
     chess.clear();
     board.clear();
   }
 
-  function onRandomButtonClick(){
+  function onAIButtonClick(){
     if(disableInteraction){
         return
     }
-    makeRandomMove();
+    disableInteraction = true
+    makeAIMove();
+    disableInteraction = false
   }
 
   function removeGreySquares () {
@@ -235,10 +242,10 @@ var board = Chessboard('chessBoard', {
     board.position(chess.fen());
   }
 
-  function makeRandomMove(){
+  function makeAIMove(){
   if (!chess.isGameOver()) {
-    const moves = chess.moves({verbose: true})
-    const move = moves[Math.floor(Math.random() * moves.length)]
+    const bestMove = getBestMove(4)
+    const move = bestMove.move
     if(chess.turn() === 'w'){
       removeHighlights('black')
       removeHighlights('white')
@@ -254,7 +261,9 @@ var board = Chessboard('chessBoard', {
       $board.find('.square-' + squareToHighlight)
     .addClass('highlight-black')
     }
-    chess.move(move)
+    console.log("Turn to move: "+chess.turn()+", Best Engine Move: "+bestMove.move+", Engine Evaluation: "+bestMove.score/100.0+" Principle Variation: "+bestMove.pV.reverse().toString())
+    chess.move(bestMove.move)
+    
     board.position(chess.fen())
     }
 }
