@@ -1,6 +1,6 @@
 
 import { Chess } from 'https://unpkg.com/chess.js@1.0.0-beta.3/dist/chess.js';
-import { evaltuatePosition, getBestMove } from './engine.js';
+import { evaltuatePosition, getBestMove, iterativeDeepening } from './engine.js';
 
 export const chess = new Chess();
 
@@ -244,7 +244,7 @@ var board = Chessboard('chessBoard', {
 
   function makeAIMove(){
   if (!chess.isGameOver()) {
-    const bestMove = getBestMove(4)
+    const bestMove = iterativeDeepening(5)
     const move = bestMove.move
     if(chess.turn() === 'w'){
       removeHighlights('black')

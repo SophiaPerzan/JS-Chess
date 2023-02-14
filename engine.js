@@ -125,15 +125,23 @@ export function generateMovesToDepth(depth){
     return numberofNodes
   }
 
-function maximizing(depth, alpha, beta, moveMade){
+function maximizing(depth, alpha, beta, variation){
     if(depth === 0){
         return {score: evaltuatePosition(), pV: []}
     }else{
         const moves = chess.moves()
+        if(variation!==undefined){
+            makeMoveFirst(variation.pop(), moves)
+        }
         let principleVariation = [moves[0]]
         for (let i=0;i<moves.length;i++){
             chess.move(moves[i])
-            let result = minimizing(depth-1, alpha, beta, moves[i])
+            let result
+            if(i === 0){
+                result = minimizing(depth-1, alpha, beta, variation)
+            }else{
+                result = minimizing(depth-1, alpha, beta, undefined)
+            }
             let score = result.score
             if(score>=beta){
                 chess.undo()
@@ -150,15 +158,23 @@ function maximizing(depth, alpha, beta, moveMade){
     }
 }
 
-function minimizing(depth, alpha, beta, moveMade){
+function minimizing(depth, alpha, beta, variation){
     if(depth === 0){
         return {score: evaltuatePosition(), pV: []}
     }else{
         const moves = chess.moves()
+        if(variation!==undefined){
+            makeMoveFirst(variation.pop(), moves)
+        }
         let principleVariation = [moves[0]]
         for (let i=0;i<moves.length;i++){
             chess.move(moves[i])
-            let result = maximizing(depth-1, alpha, beta, moves[i])
+            let result
+            if(i === 0){
+                result = maximizing(depth-1, alpha, beta, variation)
+            }else{
+                result = maximizing(depth-1, alpha, beta, undefined)
+            }
             let score = result.score
             if(score<=alpha){
                 chess.undo()
@@ -175,20 +191,60 @@ function minimizing(depth, alpha, beta, moveMade){
     }
 }
 
-function iterativeDeepening(depth){
+export function iterativeDeepening(depth){
 
+    let bestMove = getBestMove(0, undefined)
+    for(let i=1;i<depth+1;i++){
+        bestMove = getBestMove(i, bestMove.pV)
+        console.log("IterativeDeepening best move: "+bestMove.pV)
+    }
+    
+    return {move: bestMove.move, score: bestMove.score, pV: bestMove.pV}
 
 }
 
-export function getBestMove(depth){
-    const moves = chess.moves({verbose: true})
+function makeMoveFirst(move, moveArray){
+    if(move === undefined){
+        return
+    }
+    for (let i =0; i<moveArray.length;i++){
+        if(moveArray[i] === move){
+            let temp = moveArray[0]
+            moveArray[0] = moveArray[i]
+            moveArray[i] = temp
+            console.log("Moved "+moveArray[0]+" to the front")
+            return moveArray
+        }
+    }
+    return moveArray
+}
+
+export function getBestMove(depth, variation){
+    if(depth<1){
+        return {move: undefined, score: 0, pV: undefined}
+    }
+    let moves = chess.moves({verbose: true})
+    if(variation !== undefined){
+        let pVMove = variation.pop()
+        for (let i =0; i<moves.length;i++){
+            if(moves[i].san === pVMove){
+                let temp = moves[0]
+                moves[0] = moves[i]
+                moves[i] = temp
+                console.log("Moved "+moves[0]+" to the front")
+            }
+        }
+        //moves = makeMoveFirst(variation.pop(), moves)
+    }
+    console.log("move array in getBestMove(): "+moves[0].san)
     let moveScores = []
     for (let i=0;i<moves.length;i++){
         chess.move(moves[i])
+        console.log(i+"th move: "+moves[i].san)
         if(chess.turn() === 'w'){
-            moveScores.push(maximizing(depth-1, -1000000000, 1000000000, moves[i]))
+            moveScores.push(maximizing(depth-1, -1000000000, 1000000000, variation))
         }else{
-            moveScores.push(minimizing(depth-1, -1000000000, 1000000000, moves[i]))
+            moveScores.push(minimizing(depth-1, -1000000000, 1000000000, variation))
         }
         chess.undo()
       }
@@ -200,6 +256,7 @@ export function getBestMove(depth){
             if(moveScores[i].score>max){
                 max = moveScores[i].score
                 bestMoveIndex = i
+                moveScores[bestMoveIndex].pV.push(moves[bestMoveIndex].san)
             }
         }
     }else{
@@ -208,6 +265,7 @@ export function getBestMove(depth){
             if(moveScores[i].score<min){
                 min = moveScores[i].score
                 bestMoveIndex = i
+                moveScores[bestMoveIndex].pV.push(moves[bestMoveIndex].san)
             }
         }
     }
