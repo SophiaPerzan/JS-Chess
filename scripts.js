@@ -1,6 +1,7 @@
 
 import { Chess } from 'https://unpkg.com/chess.js@1.0.0-beta.3/dist/chess.js';
 import { evaltuatePosition, getBestMove, iterativeDeepening } from './engine.js';
+const { compute } = dcp;
 
 export const chess = new Chess();
 
@@ -85,13 +86,14 @@ var board = Chessboard('chessBoard', {
   }
 
   function onClearButtonClick(){
-    if(disableInteraction){
+   /* if(disableInteraction){
         return
     }
     removeHighlights('white')
     removeHighlights('black')
     chess.clear();
-    board.clear();
+    board.clear();*/
+    deploy()
   }
 
   function onAIButtonClick(){
@@ -244,7 +246,7 @@ var board = Chessboard('chessBoard', {
 
   function makeAIMove(){
   if (!chess.isGameOver()) {
-    const bestMove = iterativeDeepening(5)
+    const bestMove = iterativeDeepening(4)
     const move = bestMove.move
     if(chess.turn() === 'w'){
       removeHighlights('black')
@@ -266,4 +268,61 @@ var board = Chessboard('chessBoard', {
     
     board.position(chess.fen())
     }
+}
+function addJobEventListeners(job) {
+  job.on('readystatechange', (event) => {
+    console.log(`New ready state: ${event}`);
+  });
+
+  job.on('accepted', () => {
+    console.log(`Job accepted by scheduler, waiting for results...`);
+    console.log(`Job has id ${job.id}`);
+  });
+
+  job.on('console', (event) => {
+    console.log('Job console event:', event.message);
+  });
+
+  job.on('result', ({ sliceNumber, result }) => {
+    console.log(`Received result for slice ${sliceNumber}:`, result);
+  });
+}
+
+async function deploy() {
+  const { compute } = dcp;
+
+
+  /* INPUT DATA */
+  const moveSet = chess.moves()
+  const inputSet = [moveSet[0], moveSet[1], moveSet[2]]
+
+  /* WORK FUNCTION
+   * Returns one sorted chunk per slice */
+  async function workFn(arr) {
+    progress();
+    console.log(arr)
+    return true
+  }
+
+  /* COMPUTE FOR */
+  const job = compute.for(inputSet, workFn);
+  job.public.name = 'Distributed Chess Engine';
+  addJobEventListeners(job)
+  job.on('console', (message) => console.log(message));
+  job.on('error', (message) => console.log(message));
+  job.requires('https://unpkg.com/chess.js@1.0.0-beta.3/dist/chess.js')
+  // job.computeGroups = [{ joinKey: 'Your Key', joinSecret: 'Your Secret' }];
+
+  // Not mandatory console logs for status updates
+  job.on('accepted', () => {
+    console.log(` - Job accepted with id: ${job.id}`);
+  });
+  job.on('result', (ev) => {
+    console.log(` - Received result ${ev}`);
+  });
+
+  /* PROCESS RESULTS */
+  let resultSet = await job.exec(0.01);
+  resultSet = Array.from(resultSet);
+  console.log(' - Job Complete');
 }
