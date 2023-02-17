@@ -687,7 +687,7 @@ const blackKingPieceSquareTable = [20, 30, 10,  0,  0, 10, 30, 20,
   job.public.description = "Making pro-level analysis more accessible"
   job.public.link = "https://github.com/SophiaPerzan/JS-Chess"
   job.requires('dcp-chess/chess.js')
-  job.computeGroups = [{ joinKey: 'queens', joinHash: 'eh1-13152c353a61c0abf297c093b8ec8a21a193ca2cd8b1d47e38e980a8de231887' }];
+  job.computeGroups = [{ joinKey: 'insight', joinSecret: 'dcp' }];
 
   const moveScores = await job.exec(0.005);
   //const moveScores = await job.localExec(31);
