@@ -32,3 +32,7 @@ button{
 .highlight-black {
     box-shadow: inset 0 0 3px 3px blue;
 }
+
+#progressBar{
+    visibility: hidden;
+}

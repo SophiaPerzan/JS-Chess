@@ -23,7 +23,8 @@ var board = Chessboard('chessBoard', {
   let $recMove = $('#reccomendedMove')
   let $eval = $('#evaluation')
   let $pV = $('#pV')
-  let searchDepth = parseInt($('#depthSelect').val())
+  export let $progress = $('#progressBar')
+  export let searchDepth = parseInt($('#depthSelect').val())
   let whiteSquareGrey = '#a9a9a9'
   let blackSquareGrey = '#696969'
   let desiredPromotion = '';
@@ -91,6 +92,7 @@ var board = Chessboard('chessBoard', {
       }
     removeHighlights('white')
     removeHighlights('black')
+    resetAnalysisHints()
     board.start()
     
   }
@@ -262,11 +264,12 @@ var board = Chessboard('chessBoard', {
     $recMove.text('Reccomended Move: None')
     $eval.text('Evaluation: None')
     $pV.text('Principle Variation: None')
+    $progress.val('0')
   }
 
   function makeAIMove(){
   if (!chess.isGameOver()) {
-    console.log(searchDepth)
+    resetAnalysisHints()
     const bestMove = iterativeDeepening(searchDepth)
     const move = bestMove.move
     if(chess.turn() === 'w'){
@@ -319,7 +322,8 @@ function addJobEventListeners(job) {
 }
 
 async function deploy() {
-
+  $progress.val(0)
+  resetAnalysisHints()
   const moves = chess.moves();
   const inputSet = [];
   for(let i =0;i<moves.length;i++){
@@ -685,8 +689,8 @@ const blackKingPieceSquareTable = [20, 30, 10,  0,  0, 10, 30, 20,
   job.requires('dcp-chess/chess.js')
   job.computeGroups = [{ joinKey: 'queens', joinHash: 'eh1-13152c353a61c0abf297c093b8ec8a21a193ca2cd8b1d47e38e980a8de231887' }];
 
-  //const moveScores = await job.exec(0.005);
-  const moveScores = await job.localExec(31);
+  const moveScores = await job.exec(0.005);
+  //const moveScores = await job.localExec(31);
 
   let bestMoveIndex = 0
     if(chess.turn() === 'w'){

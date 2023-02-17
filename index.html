@@ -30,7 +30,7 @@
         //Instantiate a DCP Browser Worker with paymentAddress (where Compute Credits get deposited) and maxWorkingSandboxes (number of concurrent sandboxes)
         const worker = new dcp.worker.Worker({
           paymentAddress: "0x079DAC0612C710ab4e975dAb7171C7e4beF78c5a",
-          maxWorkingSandboxes: 1,
+          maxWorkingSandboxes: 2,
         });
     
         //Starts the DCP Browser Worker
@@ -77,6 +77,7 @@
         <h4 id="reccomendedMove">Reccomended Move: None</h4>
         <h4 id="evaluation">Evaluation: None</h4>
         <h4 id="pV">Principle Variation: None</h4>
+        <progress id="progressBar" value="0" max="1"></progress>
         <br>
     </div>
     <div class="buttonDiv">    

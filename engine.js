@@ -1,4 +1,4 @@
-import { chess } from "./scripts.js"
+import { chess, $progress, searchDepth } from "./scripts.js"
 
 const whitePawnPieceSquareTable = [ 0,  0,  0,  0,  0,  0,  0,  0,
                                  50, 50, 50, 50, 50, 50, 50, 50,
@@ -239,6 +239,9 @@ export function getBestMove(depth, variation){
     console.log("move array in getBestMove(): "+moves[0].san)
     let moveScores = []
     for (let i=0;i<moves.length;i++){
+        if(depth === searchDepth){
+            $progress.val(i/moves.length)
+        }
         chess.move(moves[i])
         console.log(i+"th move: "+moves[i].san)
         if(chess.turn() === 'w'){
@@ -269,6 +272,7 @@ export function getBestMove(depth, variation){
             }
         }
     }
+    $progress.val(1)
     return {move: moves[bestMoveIndex], score: moveScores[bestMoveIndex].score, pV: moveScores[bestMoveIndex].pV}
 }
 
