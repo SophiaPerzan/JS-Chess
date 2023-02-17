@@ -24,7 +24,7 @@
     
         //Specifies one or more compute groups that the DCP Worker will join and retrieve computational workload from
         dcpConfig.worker.computeGroups.push(
-          {joinKey: 'insight', joinHash: 'dcp'}
+          {joinKey: 'insight', joinSecret: 'dcp'}
         );
         
         //Instantiate a DCP Browser Worker with paymentAddress (where Compute Credits get deposited) and maxWorkingSandboxes (number of concurrent sandboxes)
