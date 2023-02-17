@@ -36,3 +36,7 @@ button{
 #progressBar{
     visibility: hidden;
 }
+
+#exPos{
+    overflow: hidden;
+}

@@ -47,6 +47,9 @@ var board = Chessboard('chessBoard', {
   $('#loadPosition').on('click', loadFen)
 
   function loadFen(){
+    if(disableInteraction){
+      return
+    }
     try {
       chess.load($fen.val())
     } catch (e) {
@@ -184,7 +187,6 @@ var board = Chessboard('chessBoard', {
   }
 
   function onDragStart(sourceOfPiece, piece, boardPosition, boardOrientation){
-
     if(chess.isGameOver() || disableInteraction){
         return false
     }
