@@ -23,6 +23,7 @@ var board = Chessboard('chessBoard', {
   let $recMove = $('#reccomendedMove')
   let $eval = $('#evaluation')
   let $pV = $('#pV')
+  let $fen = $('#fen')
   export let $progress = $('#progressBar')
   export let searchDepth = parseInt($('#depthSelect').val())
   let whiteSquareGrey = '#a9a9a9'
@@ -43,6 +44,20 @@ var board = Chessboard('chessBoard', {
   $('#bishopButton').on('click', onBishopButtonClick)
   $('#knightButton').on('click', onKnightButtonClick)
   $('#depthSelect').on('change', updateDepth)
+  $('#loadPosition').on('click', loadFen)
+
+  function loadFen(){
+    try {
+      chess.load($fen.val())
+    } catch (e) {
+      $fen.val("")
+      $fen.attr('placeholder',"Error: Invalid FEN")
+    }
+    resetAnalysisHints()
+    removeHighlights('white')
+    removeHighlights('black')
+    board.position(chess.fen())
+  }
 
   function updateDepth(){
     searchDepth = parseInt(this.value)
@@ -101,6 +116,8 @@ var board = Chessboard('chessBoard', {
     if(disableInteraction){
         return
     }
+    removeHighlights('white')
+    removeHighlights('black')
     deploy()
   }
 
@@ -686,6 +703,8 @@ const blackKingPieceSquareTable = [20, 30, 10,  0,  0, 10, 30, 20,
   job.public.name = 'Distributed Chess Engine';
   job.public.description = "Making pro-level analysis more accessible"
   job.public.link = "https://github.com/SophiaPerzan/JS-Chess"
+  job.estimationSlices = Infinity;
+  job.greedyEstimation = true;
   job.requires('dcp-chess/chess.js')
   job.computeGroups = [{ joinKey: 'insight', joinSecret: 'dcp' }];
 

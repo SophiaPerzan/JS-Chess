@@ -196,7 +196,7 @@ export function iterativeDeepening(depth){
     let bestMove = getBestMove(0, undefined)
     for(let i=1;i<depth+1;i++){
         bestMove = getBestMove(i, bestMove.pV)
-        console.log("IterativeDeepening best move: "+bestMove.pV)
+        //console.log("IterativeDeepening best move: "+bestMove.pV)
     }
     
     return {move: bestMove.move, score: bestMove.score, pV: bestMove.pV}
@@ -212,7 +212,7 @@ function makeMoveFirst(move, moveArray){
             let temp = moveArray[0]
             moveArray[0] = moveArray[i]
             moveArray[i] = temp
-            console.log("Moved "+moveArray[0]+" to the front")
+            //console.log("Moved "+moveArray[0]+" to the front")
             return moveArray
         }
     }
@@ -231,19 +231,20 @@ export function getBestMove(depth, variation){
                 let temp = moves[0]
                 moves[0] = moves[i]
                 moves[i] = temp
-                console.log("Moved "+moves[0]+" to the front")
+                //console.log("Moved "+moves[0]+" to the front")
             }
         }
         //moves = makeMoveFirst(variation.pop(), moves)
     }
-    console.log("move array in getBestMove(): "+moves[0].san)
+    //console.log("move array in getBestMove(): "+moves[0].san)
     let moveScores = []
     for (let i=0;i<moves.length;i++){
         if(depth === searchDepth){
             $progress.val(i/moves.length)
+            console.log(i/moves.length)
         }
         chess.move(moves[i])
-        console.log(i+"th move: "+moves[i].san)
+        //console.log(i+"th move: "+moves[i].san)
         if(chess.turn() === 'w'){
             moveScores.push(maximizing(depth-1, -1000000000, 1000000000, variation))
         }else{
