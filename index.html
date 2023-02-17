@@ -18,6 +18,38 @@
       integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
       crossorigin="anonymous"></script>
       <script src="https://scheduler.distributed.computer/dcp-client/dcp-client.js"></script>
+      <script>
+        //Causes the DCP Browser Worker to leave the public compute group
+        dcpConfig.worker.leavePublicGroup = true;
+    
+        //Specifies one or more compute groups that the DCP Worker will join and retrieve computational workload from
+        dcpConfig.worker.computeGroups.push(
+          {joinKey: 'queens', joinHash: 'eh1-13152c353a61c0abf297c093b8ec8a21a193ca2cd8b1d47e38e980a8de231887'}
+        );
+        
+        //Instantiate a DCP Browser Worker with paymentAddress (where Compute Credits get deposited) and maxWorkingSandboxes (number of concurrent sandboxes)
+        const worker = new dcp.worker.Worker({
+          paymentAddress: "0x079DAC0612C710ab4e975dAb7171C7e4beF78c5a",
+          maxWorkingSandboxes: 1,
+        });
+    
+        //Starts the DCP Browser Worker
+        worker.start();
+    
+        //Optional events displayed in the console
+        worker.on('fetchStart', () => {
+          console.log('! fetching job slices...');
+        });
+        worker.on('fetch', (fetchedSlicesCount) => {
+          console.log('!   fetched', fetchedSlicesCount, 'job slices, computing...');
+        });
+        worker.on('submit', () => {
+          console.log('! submitting computed job slice result...');
+        });
+        worker.on('payment', receipt => {
+          console.log('!   earned', receipt.payment, 'Compute Credits');
+        });
+      </script>
       <script defer type="module" src='scripts.js'></script>
 </head>
 <body>
@@ -28,11 +60,29 @@
         <button class="promotionButtons" id="bishopButton"><img id="bishopImage" src="./img/chesspieces/wikipedia/bB.png" alt=""></button>
         <button class="promotionButtons" id="knightButton"><img id="knightImage" src="./img/chesspieces/wikipedia/bN.png" alt=""></button>
     </div>
+    <div>
+
+    </div>
     <div id="chessBoard"></div>
+    <div class="buttonDiv">
+        <label for="">Search Depth</label>
+        <select name="desiredDepth" id="depthSelect">
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </select>
+        <br>
+        <h2 id="analysis">Analysis: None</h2>
+        <h4 id="reccomendedMove">Reccomended Move: None</h4>
+        <h4 id="evaluation">Evaluation: None</h4>
+        <h4 id="pV">Principle Variation: None</h4>
+        <br>
+    </div>
     <div class="buttonDiv">    
-        <button id="startBtn">Start Position</button>
-        <button id="clearBtn">Clear Board</button>
-        <button id="aiMoveButton">Make AI Move</button>
+        <button id="startBtn">Reset Board</button>
+        <button id="DCPBtn">Distributed Analysis</button>
+        <button id="aiMoveButton">Local Analysis</button>
     </div>
 
 

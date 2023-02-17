@@ -1,6 +1,6 @@
 
 import { Chess } from 'https://unpkg.com/chess.js@1.0.0-beta.3/dist/chess.js';
-import { evaltuatePosition, getBestMove, iterativeDeepening } from './engine.js';
+import { iterativeDeepening } from './engine.js';
 const { compute } = dcp;
 
 export const chess = new Chess();
@@ -19,6 +19,11 @@ var board = Chessboard('chessBoard', {
     onMouseoverSquare: onMouseoverSquare
   });
   let $board = $('#chessBoard')
+  let $analysis = $('#analysis')
+  let $recMove = $('#reccomendedMove')
+  let $eval = $('#evaluation')
+  let $pV = $('#pV')
+  let searchDepth = parseInt($('#depthSelect').val())
   let whiteSquareGrey = '#a9a9a9'
   let blackSquareGrey = '#696969'
   let desiredPromotion = '';
@@ -30,12 +35,17 @@ var board = Chessboard('chessBoard', {
   let colorToHighlight = null
     
   $('#startBtn').on('click', onStartButtonClick)
-  $('#clearBtn').on('click', onClearButtonClick)
+  $('#DCPBtn').on('click', onDCPButtonClick)
   $('#aiMoveButton').on('click',onAIButtonClick)
   $('#queenButton').on('click', onQueenButtonClick)
   $('#rookButton').on('click', onRookButtonClick)
   $('#bishopButton').on('click', onBishopButtonClick)
   $('#knightButton').on('click', onKnightButtonClick)
+  $('#depthSelect').on('change', updateDepth)
+
+  function updateDepth(){
+    searchDepth = parseInt(this.value)
+  }
 
   function removeHighlights (color) {
     $board.find('.' + squareClass)
@@ -85,14 +95,10 @@ var board = Chessboard('chessBoard', {
     
   }
 
-  function onClearButtonClick(){
-   /* if(disableInteraction){
+  function onDCPButtonClick(){
+    if(disableInteraction){
         return
     }
-    removeHighlights('white')
-    removeHighlights('black')
-    chess.clear();
-    board.clear();*/
     deploy()
   }
 
@@ -184,6 +190,7 @@ var board = Chessboard('chessBoard', {
     if(moveSuccessful === false){
       return
     }
+    resetAnalysisHints()
     if(chess.turn() === 'b'){
       removeHighlights('black')
       removeHighlights('white')
@@ -235,6 +242,7 @@ var board = Chessboard('chessBoard', {
       $board.find('.square-' + squareToHighlight)
     .addClass('highlight-black')
     }
+    resetAnalysisHints()
     return
   }
 
@@ -249,9 +257,17 @@ var board = Chessboard('chessBoard', {
     board.position(chess.fen());
   }
 
+  function resetAnalysisHints(){
+    $analysis.text('Analysis: None')
+    $recMove.text('Reccomended Move: None')
+    $eval.text('Evaluation: None')
+    $pV.text('Principle Variation: None')
+  }
+
   function makeAIMove(){
   if (!chess.isGameOver()) {
-    const bestMove = iterativeDeepening(4)
+    console.log(searchDepth)
+    const bestMove = iterativeDeepening(searchDepth)
     const move = bestMove.move
     if(chess.turn() === 'w'){
       removeHighlights('black')
@@ -268,8 +284,11 @@ var board = Chessboard('chessBoard', {
       $board.find('.square-' + squareToHighlight)
     .addClass('highlight-black')
     }
-    console.log("Turn to move: "+chess.turn()+", Best Engine Move: "+bestMove.move.san+", Engine Evaluation: "+bestMove.score/100.0+" Principle Variation: "+bestMove.pV.reverse().toString())
-    chess.move(bestMove.move)
+    $analysis.text('Analysis: Local')
+    $recMove.text('Reccomended Move: '+bestMove.move.san)
+    $eval.text('Evaluation: '+bestMove.score/100.0)
+    $pV.text('Principle Variation: '+bestMove.pV.reverse().toString().replaceAll(',',', '))
+    //chess.move(bestMove.move)
     
     board.position(chess.fen())
     }
@@ -309,13 +328,13 @@ async function deploy() {
     chess.undo()
   }
 
-  async function workFunction(_input, searchDepth) {
+  async function workFunction(_input, depth) {
     progress(0);
 
     const Chess = require('chess.js').Chess;
     const chess = new Chess()
     chess.loadPgn(_input[0])
-    const maxDepth = searchDepth
+    const maxDepth = depth
     return {result: iterativeDeepening(maxDepth), movePlayed: _input[1]};
 
 
@@ -657,7 +676,7 @@ const blackKingPieceSquareTable = [20, 30, 10,  0,  0, 10, 30, 20,
 
   }
 
-  const sliceDepth = 5
+  const sliceDepth = searchDepth-1
   const job = compute.for(inputSet, workFunction, [sliceDepth]);
   addJobEventListeners(job);
   job.public.name = 'Distributed Chess Engine';
@@ -666,8 +685,8 @@ const blackKingPieceSquareTable = [20, 30, 10,  0,  0, 10, 30, 20,
   job.requires('dcp-chess/chess.js')
   job.computeGroups = [{ joinKey: 'queens', joinHash: 'eh1-13152c353a61c0abf297c093b8ec8a21a193ca2cd8b1d47e38e980a8de231887' }];
 
-  const moveScores = await job.exec(0.005);
-  //const moveScores = await job.localExec(31);
+  //const moveScores = await job.exec(0.005);
+  const moveScores = await job.localExec(31);
 
   let bestMoveIndex = 0
     if(chess.turn() === 'w'){
@@ -689,8 +708,34 @@ const blackKingPieceSquareTable = [20, 30, 10,  0,  0, 10, 30, 20,
             }
         }
     }
+    $analysis.text('Analysis: Distributed')
+    $recMove.text('Reccomended Move: '+(moveScores[bestMoveIndex].movePlayed))
+    $eval.text('Evaluation: '+moveScores[bestMoveIndex].result.score/100.0)
+    $pV.text('Principle Variation: '+moveScores[bestMoveIndex].result.pV.reverse().toString().replaceAll(',',', '))
 
-  console.log('Best move: '+(moveScores[bestMoveIndex].movePlayed)+" Eval: "+moveScores[bestMoveIndex].result.score/100.0+" Principal Variation: "+moveScores[bestMoveIndex].result.pV.reverse().toString());
+    let movList = chess.moves({verbose: true})
+    let move = movList[0]
+    for(let j=0;j<movList.length;j++){
+      if(moveScores[bestMoveIndex].movePlayed === movList[j].san){
+        move = movList[j]
+      }
+    }
+    
+    if(chess.turn() === 'w'){
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + move.from).addClass('highlight-white')
+      squareToHighlight = move.to
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-white')
+    }else{
+      removeHighlights('black')
+      removeHighlights('white')
+      $board.find('.square-' + move.from).addClass('highlight-black')
+      squareToHighlight = move.to
+      $board.find('.square-' + squareToHighlight)
+    .addClass('highlight-black')
+    }
 }
 
 const scheduler = 'https://scheduler.distributed.computer'
