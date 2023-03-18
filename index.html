@@ -56,68 +56,66 @@
   </script>
   <script defer type="module" src='scripts.js'></script>
 </head>
-
 <body>
-
   <div class="container text-center">
-
     <div class="row" id="promotionDiv">
       <div class="col-md-8 col-lg-7 col-sm-12 margin-x-auto">
         <div class="row">
           <div class="col-3 gx-1 gy-1">
             <button class="promotionButtons btn btn-secondary" id="queenButton"><img class="img-fluid" id="queenImage"
-              src="./img/chesspieces/wikipedia/bQ.png" alt=""></button>
+                src="./img/chesspieces/wikipedia/bQ.png" alt=""></button>
           </div>
           <div class="col-3 gx-1 gy-1">
             <button class="promotionButtons btn btn-secondary" id="rookButton"><img class="img-fluid" id="rookImage"
-              src="./img/chesspieces/wikipedia/bR.png" alt=""></button>
+                src="./img/chesspieces/wikipedia/bR.png" alt=""></button>
           </div>
           <div class="col-3 gx-1 gy-1">
             <button class="promotionButtons btn btn-secondary" id="bishopButton"><img class="img-fluid" id="bishopImage"
-              src="./img/chesspieces/wikipedia/bB.png" alt=""></button>
+                src="./img/chesspieces/wikipedia/bB.png" alt=""></button>
           </div>
           <div class="col-3 gx-1 gy-1">
             <button class="promotionButtons btn btn-secondary" id="knightButton"><img class="img-fluid" id="knightImage"
-              src="./img/chesspieces/wikipedia/bN.png" alt=""></button>
+                src="./img/chesspieces/wikipedia/bN.png" alt=""></button>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="row" >
+    <div class="row">
       <div class="col-md-8 col-lg-7 col-sm-12 gy-1 margin-x-auto" id="chessBoard"></div>
     </div>
-    <div class="">
-      <label for="">Search Depth</label>
-      <select name="desiredDepth" id="depthSelect">
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-      </select>
-      <br>
-      <h2 id="analysis">Analysis: None</h2>
-      <h4 id="reccomendedMove">Reccomended Move: None</h4>
-      <h4 id="evaluation">Evaluation: None</h4>
-      <h4 id="pV">Principle Variation: None</h4>
-      <progress id="progressBar" value="0" max="1"></progress>
-      <br>
-    </div>
-    <div class="">
-      <button class="btn btn-primary" id="startBtn">Reset Board</button>
-      <button class="btn btn-primary" id="DCPBtn">Distributed Analysis</button>
-      <button class="btn btn-primary" id="aiMoveButton">Local Analysis</button>
-    </div>
-    <div class=" input-group mb-3">
-      <button class="btn btn-primary" id="loadPosition">Load Position (FEN)</button>
-      <input type="text" id="fen" name="fen" class="form-control" placeholder="FEN String Here">
-    </div>
-    <div class="" id="exPos">
-      <p>Complex Example Position:<br>2rq2kb/pb1r3p/2n1R1pB/1pp2pN1/3p1Q2/P1PP2P1/1P3PBP/4R1K1 w - - 0 1</p>
+    <div class="row">
+      <div class="col-md-8 col-lg-7 col-sm-12 gy-1 margin-x-auto">
+        <label for="">
+          <h6>Search Depth</h6>
+        </label>
+        <select name="desiredDepth" id="depthSelect">
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+        <br>
+        <h3 id="analysis">Analysis: None</h3>
+        <h5 id="reccomendedMove">Reccomended Move: None</h5>
+        <h5 id="evaluation">Evaluation: None</h5>
+        <h5 id="pV">Principle Variation: None</h5>
+        <progress id="progressBar" value="0" max="1"></progress>
+        <br>
+        <div class="gy-1">
+          <button class="btn btn-primary gy-1" id="startBtn">Reset Board</button>
+          <button class="btn btn-primary gy-1" id="DCPBtn">Distributed Analysis</button>
+          <button class="btn btn-primary gy-1" id="aiMoveButton">Local Analysis</button>
+        </div>
+        <br>
+        <div class="input-group mb-3 gy-1">
+          <button class="btn btn-primary gy-1" id="loadPosition">Load Position (FEN)</button>
+          <input type="text" id="fen" name="fen" class="form-control gy-1" placeholder="FEN String Here">
+        </div>
+        <div class="" id="exPos">
+          <p>Complex Example Position:<br>2rq2kb/pb1r3p/2n1R1pB/1pp2pN1/3p1Q2/P1PP2P1/1P3PBP/4R1K1 w - - 0 1</p>
+        </div>
+      </div>
     </div>
   </div>
-
-
 </body>
-
 </html>

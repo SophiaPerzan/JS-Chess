@@ -11,7 +11,7 @@
 }
 
 #progressBar{
-    visibility: hidden;
+    visibility: visible;
 }
 
 #exPos{
