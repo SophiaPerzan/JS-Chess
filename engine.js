@@ -1,4 +1,11 @@
-import { chess, $progress, searchDepth } from "./scripts.js";
+import { Chess } from "https://unpkg.com/chess.js@1.0.0-beta.3/dist/chess.js";
+const chess = new Chess();
+onmessage = (e) => {
+  globalThis.searchDepth = e.data.searchDepth;
+  chess.load(e.data.fen);
+  const bestMove = iterativeDeepening(e.data.searchDepth);
+  postMessage({ finished: true, progress: 1, bestMove: bestMove });
+};
 
 const whitePawnPieceSquareTable = [
   0, 0, 0, 0, 0, 0, 0, 0, 50, 50, 50, 50, 50, 50, 50, 50, 10, 10, 20, 30, 30,
@@ -82,7 +89,7 @@ const blackKingPieceSquareTable = [
 
 //let principleVariation = []
 
-export function generateMovesToDepth(depth) {
+function generateMovesToDepth(depth) {
   if (depth < 1) {
     return 1;
   }
@@ -162,7 +169,7 @@ function minimizing(depth, alpha, beta, variation) {
   }
 }
 
-export function iterativeDeepening(depth) {
+function iterativeDeepening(depth) {
   let bestMove = getBestMove(0, undefined);
   for (let i = 1; i < depth + 1; i++) {
     bestMove = getBestMove(i, bestMove.pV);
@@ -188,7 +195,7 @@ function makeMoveFirst(move, moveArray) {
   return moveArray;
 }
 
-export function getBestMove(depth, variation) {
+function getBestMove(depth, variation) {
   if (depth < 1) {
     return { move: undefined, score: 0, pV: undefined };
   }
@@ -209,7 +216,11 @@ export function getBestMove(depth, variation) {
   let moveScores = [];
   for (let i = 0; i < moves.length; i++) {
     if (depth === searchDepth) {
-      $progress.val(i / moves.length);
+      postMessage({
+        finished: false,
+        progress: i / moves.length,
+        bestMove: null,
+      });
       console.log(i / moves.length);
     }
     chess.move(moves[i]);
@@ -246,7 +257,7 @@ export function getBestMove(depth, variation) {
       }
     }
   }
-  $progress.val(1);
+  postMessage({ finished: false, progress: 1, bestMove: null });
   return {
     move: moves[bestMoveIndex],
     score: moveScores[bestMoveIndex].score,
@@ -254,7 +265,7 @@ export function getBestMove(depth, variation) {
   };
 }
 
-export function evaluatePosition() {
+function evaluatePosition() {
   let sumEval = 0;
   let squareEval = 0;
   if (chess.isDraw()) {

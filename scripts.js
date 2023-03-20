@@ -1,5 +1,4 @@
 import { Chess } from "https://unpkg.com/chess.js@1.0.0-beta.3/dist/chess.js";
-import { iterativeDeepening } from "./engine.js";
 const { compute } = dcp;
 
 export const chess = new Chess();
@@ -125,7 +124,9 @@ async function onAIButtonClick() {
   if (disableInteraction) {
     return;
   }
+  updateProgress(0);
   disableInteraction = true;
+  makeAIMove();
 }
 
 function removeGreySquares() {
@@ -298,33 +299,54 @@ function resetAnalysisHints() {
 function makeAIMove() {
   if (!chess.isGameOver()) {
     resetAnalysisHints();
-    const bestMove = iterativeDeepening(searchDepth);
-    const move = bestMove.move;
-    if (chess.turn() === "w") {
-      removeHighlights("black");
-      removeHighlights("white");
-      $board.find(".square-" + move.from).addClass("highlight-white");
-      squareToHighlight = move.to;
-      $board.find(".square-" + squareToHighlight).addClass("highlight-white");
-    } else {
-      removeHighlights("black");
-      removeHighlights("white");
-      $board.find(".square-" + move.from).addClass("highlight-black");
-      squareToHighlight = move.to;
-      $board.find(".square-" + squareToHighlight).addClass("highlight-black");
-    }
-    $analysis.text("Analysis: Local");
-    $recMove.text("Recommended Move: " + bestMove.move.san);
-    $eval.text("Evaluation: " + bestMove.score / 100.0);
-    $pV.text(
-      "Principle Variation: " +
-        bestMove.pV.reverse().toString().replaceAll(",", ", ")
-    );
-    //chess.move(bestMove.move)
-
-    board.position(chess.fen());
+    const engineWorker = new Worker("engine.js", { type: "module" });
+    engineWorker.postMessage({
+      searchDepth: searchDepth,
+      fen: chess.fen(),
+    });
+    console.log("sent message to worker");
+    engineWorker.onmessage = (event) => {
+      console.log("received message from worker");
+      console.log(event);
+      if (event.data.finished === true) {
+        const bestMove = event.data.bestMove;
+        updateProgress(1);
+        updateAnalysis(bestMove);
+      } else {
+        updateProgress(event.data.progress);
+      }
+    };
   }
 }
+
+function updateAnalysis(bestMove) {
+  const move = bestMove.move;
+  if (chess.turn() === "w") {
+    removeHighlights("black");
+    removeHighlights("white");
+    $board.find(".square-" + move.from).addClass("highlight-white");
+    squareToHighlight = move.to;
+    $board.find(".square-" + squareToHighlight).addClass("highlight-white");
+  } else {
+    removeHighlights("black");
+    removeHighlights("white");
+    $board.find(".square-" + move.from).addClass("highlight-black");
+    squareToHighlight = move.to;
+    $board.find(".square-" + squareToHighlight).addClass("highlight-black");
+  }
+  $analysis.text("Analysis: Local");
+  $recMove.text("Recommended Move: " + bestMove.move.san);
+  $eval.text("Evaluation: " + bestMove.score / 100.0);
+  $pV.text(
+    "Principle Variation: " +
+      bestMove.pV.reverse().toString().replaceAll(",", ", ")
+  );
+  //chess.move(bestMove.move)
+
+  board.position(chess.fen());
+  disableInteraction = false;
+}
+
 process.on("unhandledRejection", (e) => {
   console.trace("****got a reject", e);
 });
