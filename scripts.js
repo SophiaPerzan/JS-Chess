@@ -15,6 +15,7 @@ var board = Chessboard("chessBoard", {
   onSnapEnd: onSnapEnd,
   onMouseoutSquare: onMouseoutSquare,
   onMouseoverSquare: onMouseoverSquare,
+  pieceTheme: 'img/chesspieces/wikipedia/{piece}.png',
 });
 let $board = $("#chessBoard");
 let $analysis = $("#analysis");
