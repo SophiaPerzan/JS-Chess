@@ -1,29 +1,29 @@
-.promotionButtons{
-    padding: 0px;
+.promotionButtons {
+  padding: 0px;
 }
 
 .highlight-white {
-    box-shadow: inset 0 0 3px 3px red;
+  box-shadow: inset 0 0 3px 3px red;
 }
-  
+
 .highlight-black {
-    box-shadow: inset 0 0 3px 3px blue;
+  box-shadow: inset 0 0 3px 3px blue;
 }
 
-#progressBar{
-    visibility: visible;
+#progressBar {
+  visibility: visible;
 }
 
-#exPos{
-    overflow: hidden;
-    padding-bottom: 50px;
+#exPos {
+  overflow: hidden;
+  padding-bottom: 50px;
 }
 
-.margin-x-auto{
-    margin-left: auto;
-    margin-right: auto;
+.margin-x-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
-#promotionDiv{
-    visibility: hidden;
+#promotionDiv {
+  visibility: hidden;
 }
