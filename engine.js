@@ -87,13 +87,13 @@ export function generateMovesToDepth(depth) {
     return 1;
   }
   const moves = chess.moves();
-  let numberofNodes = 0;
+  let numberOfNodes = 0;
   for (let i = 0; i < moves.length; i++) {
     chess.move(moves[i]);
-    numberofNodes += generateMovesToDepth(depth - 1);
+    numberOfNodes += generateMovesToDepth(depth - 1);
     chess.undo();
   }
-  return numberofNodes;
+  return numberOfNodes;
 }
 
 function maximizing(depth, alpha, beta, variation) {

@@ -19,7 +19,7 @@ var board = Chessboard("chessBoard", {
 });
 let $board = $("#chessBoard");
 let $analysis = $("#analysis");
-let $recMove = $("#reccomendedMove");
+let $recMove = $("#recommendedMove");
 let $eval = $("#evaluation");
 let $pV = $("#pV");
 let $fen = $("#fen");
@@ -289,7 +289,7 @@ function updateProgress(value) {
 
 function resetAnalysisHints() {
   $analysis.text("Analysis: None");
-  $recMove.text("Reccomended Move: None");
+  $recMove.text("Recommended Move: None");
   $eval.text("Evaluation: None");
   $pV.text("Principle Variation: None");
   $progress.val("0");
@@ -314,7 +314,7 @@ function makeAIMove() {
       $board.find(".square-" + squareToHighlight).addClass("highlight-black");
     }
     $analysis.text("Analysis: Local");
-    $recMove.text("Reccomended Move: " + bestMove.move.san);
+    $recMove.text("Recommended Move: " + bestMove.move.san);
     $eval.text("Evaluation: " + bestMove.score / 100.0);
     $pV.text(
       "Principle Variation: " +
@@ -731,7 +731,7 @@ async function deploy() {
     }
   }
   $analysis.text("Analysis: Distributed");
-  $recMove.text("Reccomended Move: " + moveScores[bestMoveIndex].movePlayed);
+  $recMove.text("Recommended Move: " + moveScores[bestMoveIndex].movePlayed);
   $eval.text("Evaluation: " + moveScores[bestMoveIndex].result.score / 100.0);
   $pV.text(
     "Principle Variation: " +
