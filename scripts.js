@@ -120,7 +120,7 @@ function onDCPButtonClick() {
   deploy();
 }
 
-async function onAIButtonClick() {
+function onAIButtonClick() {
   if (disableInteraction) {
     return;
   }
@@ -293,7 +293,7 @@ function resetAnalysisHints() {
   $recMove.text("Recommended Move: None");
   $eval.text("Evaluation: None");
   $pV.text("Principle Variation: None");
-  $progress.val("0");
+  updateProgress(0);
 }
 
 function makeAIMove() {
@@ -304,10 +304,7 @@ function makeAIMove() {
       searchDepth: searchDepth,
       fen: chess.fen(),
     });
-    console.log("sent message to worker");
     engineWorker.onmessage = (event) => {
-      console.log("received message from worker");
-      console.log(event);
       if (event.data.finished === true) {
         const bestMove = event.data.bestMove;
         updateProgress(1);
