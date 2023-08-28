@@ -34,43 +34,40 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://scheduler.distributed.computer/dcp-client/dcp-client.js"></script>
-    <script>
-      //Causes the DCP Browser Worker to leave the public compute group
-      dcpConfig.worker.leavePublicGroup = true;
+   </script>
 
-      //Specifies one or more compute groups that the DCP Worker will join and retrieve computational workload from
-      dcpConfig.worker.computeGroups.push({
-        joinKey: "insight",
-        joinSecret: "dcp",
-      });
+    <!–– Constructs and starts a DCP Worker ––>
+      <script type="module">
+        //Constructs a DCP Worker with:
+        //  paymentAddress (where Compute Credits get deposited),
+        //  maxWorkingSandboxes (number of concurrent sandboxes),
+        //  leavePublicGroup (retrieves workload from public group true/false),
+        //  computeGroups (retrieves workload from array of private group(s)).
+        const identity = await dcp.wallet.getId();
+        const worker = new dcp.worker.Worker(identity, {
+          paymentAddress: '0x079DAC0612C710ab4e975dAb7171C7e4beF78c5a',
+          maxWorkingSandboxes: 4,
+          leavePublicGroup: true,
+          computeGroups: [{joinKey: 'hackathon', joinSecret: 'dcp2022'}],
+        });
 
-      //Instantiate a DCP Browser Worker with paymentAddress (where Compute Credits get deposited) and maxWorkingSandboxes (number of concurrent sandboxes)
-      const worker = new dcp.worker.Worker({
-        paymentAddress: "0x2ae0d4fe077747e82016bc108d0b87bca5c4651c",
-        maxWorkingSandboxes: 2,
-      });
+        //Starts the worker
+        worker.start();
 
-      //Starts the DCP Browser Worker
-      worker.start();
-
-      //Optional events displayed in the console
-      worker.on("fetchStart", () => {
-        console.log("! fetching job slices...");
-      });
-      worker.on("fetch", (fetchedSlicesCount) => {
-        console.log(
-          "!   fetched",
-          fetchedSlicesCount,
-          "job slices, computing..."
-        );
-      });
-      worker.on("submit", () => {
-        console.log("! submitting computed job slice result...");
-      });
-      worker.on("payment", (receipt) => {
-        console.log("!   earned", receipt.payment, "Compute Credits");
-      });
-    </script>
+        //Displays events in the console
+        worker.on('fetchStart', () => {
+          console.log('! fetching job slices...');
+        });
+        worker.on('fetch', (fetchedSlicesCount) => {
+          console.log('!   fetched', fetchedSlicesCount, 'job slices, computing...');
+        });
+        worker.on('submit', () => {
+          console.log('! submitting computed job slice result...');
+        });
+        worker.on('payment', receipt => {
+          console.log('!   earned', receipt.payment, 'Compute Credits');
+        });
+      </script>
     <script defer type="module" src="scripts.js"></script>
   </head>
   <body>
